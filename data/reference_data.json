@@ -1,0 +1,274 @@
+{
+  "categories": [
+    "telecom",
+    "software",
+    "travel",
+    "office_supplies",
+    "professional_services",
+    "utilities",
+    "other"
+  ],
+  "business_units": [
+    "operations",
+    "sales",
+    "marketing",
+    "it",
+    "general_admin"
+  ],
+  "canonical_suppliers": [
+    {
+      "canonical_supplier": "ORANGE ESPAGNE SA",
+      "country": "ES",
+      "supplier_tax_id": "ESA82009812",
+      "known_aliases": [
+        "Orange Espagne SA",
+        "Orange Espagne, S.A.",
+        "ORANGE ES",
+        "Orange Espana",
+        "Orange Espagne S.A.U."
+      ],
+      "typical_category": "telecom",
+      "typical_business_unit": "it",
+      "description_keywords": [
+        "mobile",
+        "telefonia",
+        "telecom",
+        "fiber",
+        "internet",
+        "servicio movil"
+      ]
+    },
+    {
+      "canonical_supplier": "GOOGLE CLOUD EMEA LTD",
+      "country": "IE",
+      "supplier_tax_id": "IE6388047V",
+      "known_aliases": [
+        "Google Cloud",
+        "Google Cloud EMEA",
+        "GCloud EMEA Ltd",
+        "Google C1oud",
+        "Google Cloud Ireland"
+      ],
+      "typical_category": "software",
+      "typical_business_unit": "it",
+      "description_keywords": [
+        "cloud",
+        "hosting",
+        "compute",
+        "storage",
+        "platform",
+        "gcp"
+      ]
+    },
+    {
+      "canonical_supplier": "AWS EMEA SARL",
+      "country": "LU",
+      "supplier_tax_id": "LU26375245",
+      "known_aliases": [
+        "AWS EMEA SARL",
+        "Amazon Web Services",
+        "Amazon WS",
+        "AWS EMEA",
+        "A.W.S. EMEA"
+      ],
+      "typical_category": "software",
+      "typical_business_unit": "it",
+      "description_keywords": [
+        "aws",
+        "cloud",
+        "compute",
+        "hosting",
+        "storage"
+      ]
+    },
+    {
+      "canonical_supplier": "GOOGLE ADS FRANCE",
+      "country": "FR",
+      "supplier_tax_id": "FR40303265045",
+      "known_aliases": [
+        "Google Ads",
+        "Google Ads France",
+        "Google Advertising",
+        "G Ads FR",
+        "Google Ads Frnce"
+      ],
+      "typical_category": "professional_services",
+      "typical_business_unit": "marketing",
+      "description_keywords": [
+        "ads",
+        "campaign",
+        "advertising",
+        "search campaign",
+        "display"
+      ]
+    },
+    {
+      "canonical_supplier": "IBERIA VIAJES CORPORATE SL",
+      "country": "ES",
+      "supplier_tax_id": "ESB76123451",
+      "known_aliases": [
+        "Iberia Viajes",
+        "Iberia Viajes Corporate",
+        "IBERIA VIAJES",
+        "Iberia Travel",
+        "Iberia Viajes Corp."
+      ],
+      "typical_category": "travel",
+      "typical_business_unit": "sales",
+      "description_keywords": [
+        "flight",
+        "hotel",
+        "travel",
+        "trip",
+        "booking"
+      ]
+    },
+    {
+      "canonical_supplier": "STAPLES IBERIA SA",
+      "country": "ES",
+      "supplier_tax_id": "ESA79435678",
+      "known_aliases": [
+        "Staples Iberia",
+        "Staples",
+        "Staples España",
+        "STAPLES IBERIA SA",
+        "StapIes Iberia"
+      ],
+      "typical_category": "office_supplies",
+      "typical_business_unit": "general_admin",
+      "description_keywords": [
+        "paper",
+        "notebook",
+        "toner",
+        "office",
+        "supplies",
+        "stationery"
+      ]
+    },
+    {
+      "canonical_supplier": "ENDESA ENERGIA SAU",
+      "country": "ES",
+      "supplier_tax_id": "ESA81948077",
+      "known_aliases": [
+        "Endesa Energia",
+        "ENDESA ENERGIA SAU",
+        "Endesa",
+        "Ende5a Energia",
+        "Endesa Energía"
+      ],
+      "typical_category": "utilities",
+      "typical_business_unit": "operations",
+      "description_keywords": [
+        "electricity",
+        "energy",
+        "power",
+        "suministro",
+        "consumo",
+        "luz"
+      ]
+    },
+    {
+      "canonical_supplier": "DELOITTE ADVISORY SL",
+      "country": "ES",
+      "supplier_tax_id": "ESB84561239",
+      "known_aliases": [
+        "Deloitte Advisory",
+        "Deloitte",
+        "Deloitte Advisory SL",
+        "Deloittee",
+        "Deloitte Asesoria"
+      ],
+      "typical_category": "professional_services",
+      "typical_business_unit": "general_admin",
+      "description_keywords": [
+        "advisory",
+        "consulting",
+        "audit",
+        "review",
+        "project support"
+      ]
+    },
+    {
+      "canonical_supplier": "MICROSOFT IRELAND OPERATIONS LTD",
+      "country": "IE",
+      "supplier_tax_id": "IE8256796U",
+      "known_aliases": [
+        "Microsoft Ireland",
+        "Microsoft",
+        "MSFT Ireland",
+        "Micr0soft Ireland",
+        "Microsoft Ireland Ops"
+      ],
+      "typical_category": "software",
+      "typical_business_unit": "it",
+      "description_keywords": [
+        "office 365",
+        "licenses",
+        "microsoft",
+        "azure",
+        "subscription"
+      ]
+    },
+    {
+      "canonical_supplier": "UBER BV",
+      "country": "NL",
+      "supplier_tax_id": "NL852071589B01",
+      "known_aliases": [
+        "Uber BV",
+        "Uber",
+        "UBER B.V.",
+        "Ubeer",
+        "Uber Netherlands"
+      ],
+      "typical_category": "travel",
+      "typical_business_unit": "sales",
+      "description_keywords": [
+        "ride",
+        "trip",
+        "mobility",
+        "transport",
+        "uber"
+      ]
+    }
+  ],
+  "review_rules": [
+    {
+      "rule_id": "RR1",
+      "description": "If supplier_tax_id is missing and supplier cannot be matched confidently, mark needs_review."
+    },
+    {
+      "rule_id": "RR2",
+      "description": "If field_confidence for supplier_name or description is below 0.60, consider needs_review."
+    },
+    {
+      "rule_id": "RR3",
+      "description": "If historical matches suggest conflicting categories or business units, mark needs_review."
+    },
+    {
+      "rule_id": "RR4",
+      "description": "If supplier appears to be new and there is no strong category signal, mark needs_review."
+    }
+  ],
+  "country_hints": [
+    {
+      "country": "ES",
+      "notes": "Domestic suppliers often have 21% VAT in this synthetic dataset."
+    },
+    {
+      "country": "IE",
+      "notes": "Synthetic examples for software subscriptions often have 0 VAT."
+    },
+    {
+      "country": "FR",
+      "notes": "Marketing and consulting examples may appear with 0 VAT in this dataset."
+    },
+    {
+      "country": "LU",
+      "notes": "Cloud infrastructure examples may appear with 0 VAT in this dataset."
+    },
+    {
+      "country": "NL",
+      "notes": "Mobility examples may appear with 0 VAT in this dataset."
+    }
+  ]
+}

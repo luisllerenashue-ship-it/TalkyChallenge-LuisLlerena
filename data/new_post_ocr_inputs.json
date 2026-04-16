@@ -1,0 +1,288 @@
+[
+  {
+    "document_id": "doc_new_001",
+    "supplier_name": "Orange Espana",
+    "supplier_tax_id": "",
+    "invoice_number": "F-2026-0312",
+    "invoice_date": "2026/03/02",
+    "currency": "EUR",
+    "base_amount": "82,64",
+    "tax_amount": "17,35",
+    "total_amount": "99,99",
+    "description": "Servicio movil empresa marzo 2026",
+    "country": "ES",
+    "raw_ocr_text": "Orange Espana SA Servicio movil empresa marzo 2026 Base 82,64 IVA 17,35 Total 99,99",
+    "field_confidence": {
+      "supplier_name": 0.84,
+      "supplier_tax_id": 0.35,
+      "invoice_date": 0.93,
+      "total_amount": 0.98
+    }
+  },
+  {
+    "document_id": "doc_new_002",
+    "supplier_name": "Google C1oud EMEA",
+    "supplier_tax_id": "IE6388047V",
+    "invoice_number": "GC-778102",
+    "invoice_date": "2026-03-31",
+    "currency": "EUR",
+    "base_amount": "1240.00",
+    "tax_amount": "0.00",
+    "total_amount": "1240.00",
+    "description": "Compute engine and storage subscription March",
+    "country": "IE",
+    "raw_ocr_text": "Google C1oud EMEA Ltd invoice GC-778102 compute engine and storage subscription March total 1240.00 EUR",
+    "field_confidence": {
+      "supplier_name": 0.78,
+      "supplier_tax_id": 0.97,
+      "description": 0.92
+    }
+  },
+  {
+    "document_id": "doc_new_003",
+    "supplier_name": "Google Ads Frnce",
+    "supplier_tax_id": "FR40303265045",
+    "invoice_number": "ADS-2026-04-91",
+    "invoice_date": "2026-04-01",
+    "currency": "EUR",
+    "base_amount": "550.00",
+    "tax_amount": "0.00",
+    "total_amount": "550.00",
+    "description": "Search campaign monthly spend",
+    "country": "FR",
+    "raw_ocr_text": "Google Ads Frnce Search campaign monthly spend total 550.00",
+    "field_confidence": {
+      "supplier_name": 0.82,
+      "supplier_tax_id": 0.95,
+      "description": 0.9
+    }
+  },
+  {
+    "document_id": "doc_new_004",
+    "supplier_name": "StapIes Iberia",
+    "supplier_tax_id": "ESA79435678",
+    "invoice_number": "ST-09022",
+    "invoice_date": "03-04-2026",
+    "currency": "EUR",
+    "base_amount": "64.20",
+    "tax_amount": "13.48",
+    "total_amount": "77.68",
+    "description": "Paper, toner and stationery order",
+    "country": "ES",
+    "raw_ocr_text": "StapIes Iberia toner paper stationery order total 77.68",
+    "field_confidence": {
+      "supplier_name": 0.67,
+      "supplier_tax_id": 0.96,
+      "description": 0.94
+    }
+  },
+  {
+    "document_id": "doc_new_005",
+    "supplier_name": "Ende5a Energia",
+    "supplier_tax_id": "ESA81948077",
+    "invoice_number": "EN-33109",
+    "invoice_date": "2026-03-28",
+    "currency": "EUR",
+    "base_amount": "310.00",
+    "tax_amount": "65.10",
+    "total_amount": "375.10",
+    "description": "Electricity consumption coworking office",
+    "country": "ES",
+    "raw_ocr_text": "Ende5a Energia electricity consumption coworking office total 375.10",
+    "field_confidence": {
+      "supplier_name": 0.73,
+      "supplier_tax_id": 0.94,
+      "description": 0.89
+    }
+  },
+  {
+    "document_id": "doc_new_006",
+    "supplier_name": "Iberia Travel",
+    "supplier_tax_id": "",
+    "invoice_number": "TR-8814",
+    "invoice_date": "2026-04-02",
+    "currency": "EUR",
+    "base_amount": "420.50",
+    "tax_amount": "88.31",
+    "total_amount": "508.81",
+    "description": "Flight and hotel for Paris customer visit",
+    "country": "ES",
+    "raw_ocr_text": "Iberia Travel Flight and hotel for Paris customer visit total 508.81",
+    "field_confidence": {
+      "supplier_name": 0.81,
+      "supplier_tax_id": 0.22,
+      "description": 0.93
+    }
+  },
+  {
+    "document_id": "doc_new_007",
+    "supplier_name": "Deloittee",
+    "supplier_tax_id": "ESB84561239",
+    "invoice_number": "DL-4401",
+    "invoice_date": "2026-03-15",
+    "currency": "EUR",
+    "base_amount": "2400.00",
+    "tax_amount": "504.00",
+    "total_amount": "2904.00",
+    "description": "Quarterly advisory services for policy review",
+    "country": "ES",
+    "raw_ocr_text": "Deloittee advisory services quarterly policy review total 2904.00",
+    "field_confidence": {
+      "supplier_name": 0.61,
+      "supplier_tax_id": 0.96,
+      "description": 0.88
+    }
+  },
+  {
+    "document_id": "doc_new_008",
+    "supplier_name": "Micr0soft Ireland",
+    "supplier_tax_id": "IE8256796U",
+    "invoice_number": "MS-2026-299",
+    "invoice_date": "2026-04-03",
+    "currency": "EUR",
+    "base_amount": "899.00",
+    "tax_amount": "0.00",
+    "total_amount": "899.00",
+    "description": "Office 365 licenses annual renewal",
+    "country": "IE",
+    "raw_ocr_text": "Micr0soft Ireland Office 365 licenses annual renewal total 899.00",
+    "field_confidence": {
+      "supplier_name": 0.72,
+      "supplier_tax_id": 0.95,
+      "description": 0.97
+    }
+  },
+  {
+    "document_id": "doc_new_009",
+    "supplier_name": "Uber",
+    "supplier_tax_id": "",
+    "invoice_number": "UB-22009",
+    "invoice_date": "2026-04-05",
+    "currency": "EUR",
+    "base_amount": "38.60",
+    "tax_amount": "0.00",
+    "total_amount": "38.60",
+    "description": "Ride to customer office",
+    "country": "NL",
+    "raw_ocr_text": "Uber Ride to customer office total 38.60 EUR",
+    "field_confidence": {
+      "supplier_name": 0.92,
+      "supplier_tax_id": 0.18,
+      "description": 0.83
+    }
+  },
+  {
+    "document_id": "doc_new_010",
+    "supplier_name": "Amazon",
+    "supplier_tax_id": "",
+    "invoice_number": "AMZ-1206",
+    "invoice_date": "2026-04-01",
+    "currency": "EUR",
+    "base_amount": "112.40",
+    "tax_amount": "23.60",
+    "total_amount": "136.00",
+    "description": "Business order",
+    "country": "ES",
+    "raw_ocr_text": "Amazon business order total 136.00",
+    "field_confidence": {
+      "supplier_name": 0.96,
+      "supplier_tax_id": 0.05,
+      "description": 0.41
+    }
+  },
+  {
+    "document_id": "doc_new_011",
+    "supplier_name": "Acme Consulting Europe",
+    "supplier_tax_id": "FR998877665",
+    "invoice_number": "AC-00192",
+    "invoice_date": "2026-03-29",
+    "currency": "EUR",
+    "base_amount": "1800.00",
+    "tax_amount": "0.00",
+    "total_amount": "1800.00",
+    "description": "Transformation workshop facilitation",
+    "country": "FR",
+    "raw_ocr_text": "Acme Consulting Europe transformation workshop facilitation total 1800.00",
+    "field_confidence": {
+      "supplier_name": 0.95,
+      "supplier_tax_id": 0.91,
+      "description": 0.89
+    }
+  },
+  {
+    "document_id": "doc_new_012",
+    "supplier_name": "AWS EMEA",
+    "supplier_tax_id": "LU26375245",
+    "invoice_number": "AWS-77390",
+    "invoice_date": "2026-04-04",
+    "currency": "EUR",
+    "base_amount": "1640.80",
+    "tax_amount": "0.00",
+    "total_amount": "1640.80",
+    "description": "Cloud compute and storage usage",
+    "country": "LU",
+    "raw_ocr_text": "AWS EMEA Cloud compute and storage usage total 1640.80",
+    "field_confidence": {
+      "supplier_name": 0.88,
+      "supplier_tax_id": 0.97,
+      "description": 0.96
+    }
+  },
+  {
+    "document_id": "doc_new_013",
+    "supplier_name": "Orange Espagne S.A.",
+    "supplier_tax_id": "ESA82009812",
+    "invoice_number": "F-2026-0355",
+    "invoice_date": "2026-04-06",
+    "currency": "EUR",
+    "base_amount": "180.00",
+    "tax_amount": "37.80",
+    "total_amount": "217.80",
+    "description": "Fiber internet headquarters",
+    "country": "ES",
+    "raw_ocr_text": "Orange Espagne S.A. Fiber internet headquarters total 217.80",
+    "field_confidence": {
+      "supplier_name": 0.97,
+      "supplier_tax_id": 0.98,
+      "description": 0.9
+    }
+  },
+  {
+    "document_id": "doc_new_014",
+    "supplier_name": "G Ads FR",
+    "supplier_tax_id": "",
+    "invoice_number": "GA-APR-44",
+    "invoice_date": "2026-04-06",
+    "currency": "EUR",
+    "base_amount": "1299.99",
+    "tax_amount": "0.00",
+    "total_amount": "1299.99",
+    "description": "Display campaign April growth initiative",
+    "country": "FR",
+    "raw_ocr_text": "G Ads FR Display campaign April growth initiative total 1299.99",
+    "field_confidence": {
+      "supplier_name": 0.66,
+      "supplier_tax_id": 0.11,
+      "description": 0.92
+    }
+  },
+  {
+    "document_id": "doc_new_015",
+    "supplier_name": "WeWork Spain",
+    "supplier_tax_id": "ESA12345000",
+    "invoice_number": "WW-4300",
+    "invoice_date": "2026-04-07",
+    "currency": "EUR",
+    "base_amount": "980.00",
+    "tax_amount": "205.80",
+    "total_amount": "1185.80",
+    "description": "Coworking monthly office fee",
+    "country": "ES",
+    "raw_ocr_text": "WeWork Spain coworking monthly office fee total 1185.80",
+    "field_confidence": {
+      "supplier_name": 0.94,
+      "supplier_tax_id": 0.87,
+      "description": 0.94
+    }
+  }
+]

@@ -1,0 +1,23 @@
+version: "3.9"
+
+services:
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - CLAUDE_MODEL=${CLAUDE_MODEL:-claude-sonnet-4-6}
+      - OPERATIONAL_DB_URL=sqlite:////app/data/invoices.db
+      - ANALYTICAL_DB_PATH=/app/data/analytics.db
+      - HISTORICAL_DATA_PATH=/app/data/historical_resolutions.json
+      - REFERENCE_DATA_PATH=/app/data/reference_data.json
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+    volumes:
+      - ./data:/app/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3

@@ -1,171 +1,285 @@
-# Post-OCR Invoice Resolution Service — README del repositorio
+# Post-OCR Invoice Resolution Service
 
-## Descripción general
+A backend service that receives structured post-OCR invoice payloads, normalises them, and uses an **LLM agent with internal tools** (Anthropic Claude) to resolve business fields: canonical supplier, spend category, business unit, and review decision. Resolved records are exported incrementally to a separate analytics layer.
 
-Este repositorio contiene el material necesario para realizar una prueba técnica orientada a evaluar tres capacidades principales:
+---
 
-- diseño de **APIs backend**
-- manejo, normalización y persistencia de **datos post-OCR**
-- integración de un **agente basado en LLM** que use contexto histórico y datos de referencia para resolver campos de negocio simplificados
+## Architecture
 
-La prueba está pensada para simular un flujo realista donde una etapa previa de OCR/parsing ya ha extraído información de facturas y el sistema candidato debe trabajar **a partir de esos datos ya estructurados**.
+```
+POST /invoices  ──►  Normalisation layer  ──►  Operational DB (SQLite: invoices.db)
+                          (pure Python)              │
+                                                     │  POST /invoices/{id}/resolve
+                                                     ▼
+                                              LLM Agent (Claude)
+                                                  │   │   │
+                                    Tool 1: lookup_historical_supplier
+                                    Tool 2: validate_against_reference
+                                    Tool 3: check_compliance_flags
+                                                     │
+                                              Resolution JSON
+                                              persisted to DB
+                                                     │
+                                         POST /exports/run
+                                                     ▼
+                                        Analytics DB (SQLite: analytics.db)
+                                        resolved_invoices flat table
+```
 
-## Objetivo de la prueba
+### Project structure
 
-El objetivo es construir un servicio que:
+```
+backend/
+  app.py                        FastAPI application entry point
+  config.py                     Environment-based configuration
+  api/
+    health.py                   GET /health
+    invoices.py                 POST|GET /invoices, /resolve, /override, /seed
+    exports.py                  POST /exports/run, GET /exports/summary
+  db/
+    connection.py               SQLAlchemy engine + session factory
+  models/
+    invoice.py                  SQLAlchemy ORM model
+    schemas.py                  Pydantic request/response schemas
+  services/
+    invoice_processor.py        Normalisation layer (pure Python, no LLM)
+    llm_agent.py                Claude agent with mandatory 3-tool loop
+    export_service.py           Incremental export to analytics SQLite
+    tools/
+      historical_lookup.py      Tool 1: fuzzy search against historical_resolutions.json
+      reference_validator.py    Tool 2: canonical lookup against reference_data.json
+      compliance_checker.py     Tool 3: deterministic risk flag checker
+data/
+  new_post_ocr_inputs.json      15 seed invoices (OCR-extracted)
+  historical_resolutions.json   51 previously resolved invoices (agent memory)
+  reference_data.json           Canonical suppliers, categories, BU catalog, rules
+  invoices.db                   Created on first run (operational)
+  analytics.db                  Created on first export (analytical)
+tests/
+  conftest.py                   In-memory DB fixture
+  test_invoice_processor.py     Unit tests for normalisation
+  test_tools.py                 Unit tests for all three agent tools
+  test_api.py                   Integration tests (no LLM needed)
+scripts/
+  seed.py                       CLI helper: seed + resolve + export
+```
 
-1. reciba payloads post-OCR de nuevas facturas
-2. los valide y normalice
-3. los almacene en una capa operacional
-4. utilice un componente basado en LLM para resolver campos de negocio simplificados
-5. exponga los resultados por API
-6. exporte los registros resueltos de forma incremental a una segunda capa analítica
+### Key design decisions
 
-El detalle completo del ejercicio se encuentra en el PDF incluido en la raíz del proyecto.
+| Decision | Rationale |
+|---|---|
+| **Normalisation before LLM** | Dates, amounts, currency are 100% deterministic Python — no LLM tokens wasted |
+| **Mandatory 3-tool order** | System prompt enforces `historical_lookup → reference_validator → compliance_checker`. Tool results are cached and passed forward (compliance checker receives history + reference context) |
+| **Two SQLite files** | `invoices.db` = operational (full audit trail, raw + normalised + resolution). `analytics.db` = denormalised flat table ready for reporting/training |
+| **Incremental export via `exported_at`** | Simple reliable watermark. Override resets `exported_at = NULL` for automatic re-export |
+| **Idempotent import** | Duplicate `document_id` silently skipped in `/import` and `/seed` |
+| **Tool call trace stored** | Every resolution includes `tool_calls_trace` array for full observability |
 
-## Estructura esperada del repositorio
+---
 
-Este repositorio está organizado alrededor de dos elementos principales:
+## Quick start
 
-### 1. Enunciado en la raíz
+### 1. Install
 
-En la raíz del proyecto se encuentra el documento PDF con el enunciado completo de la prueba:
+```bash
+python -m venv .venv
+source .venv/bin/activate        # Windows: .venv\Scripts\activate
+pip install -r requirements.txt
+```
 
-- `post_ocr_invoice_resolution_service.pdf`
+### 2. Configure
 
-Ese documento describe:
+```bash
+cp .env.example .env
+# Edit .env — set ANTHROPIC_API_KEY=sk-ant-...
+```
 
-- el problema a resolver
-- los requisitos funcionales
-- los entregables esperados
-- los bonus opcionales
-- los criterios de evaluación
+### 3. Start the server
 
-## 2. Carpeta `data/`
+```bash
+uvicorn backend.app:app --reload --port 8000
+```
 
-En la carpeta `data/` se incluye la semilla de datos necesaria para desarrollar y validar la prueba.
+Interactive docs: http://localhost:8000/docs
 
-Dentro de esa carpeta se encuentra:
+---
 
-- un README específico explicando el propósito de cada fichero
-- los datos sintéticos de entrada
-- el histórico resuelto
-- los datos de referencia
-- un fichero interno con resoluciones esperadas para evaluación
+## Docker
 
-### Contenido de `data/`
+```bash
+ANTHROPIC_API_KEY=sk-ant-... docker compose up --build
+```
 
-Los ficheros incluidos son:
+---
 
-- `README.md`
-- `new_post_ocr_inputs.json`
-- `new_post_ocr_inputs.csv`
-- `historical_resolutions.json`
-- `historical_resolutions.csv`
-- `reference_data.json`
+## API reference
 
-### Qué uso tiene cada grupo de datos
+### Health
 
-#### `new_post_ocr_inputs.*`
-Contienen las nuevas entradas que el sistema debe recibir y procesar.
+```bash
+GET /health
+```
 
-Representan la salida de OCR/parsing de facturas nuevas aún no resueltas.
+### Ingest invoices
 
-#### `historical_resolutions.*`
-Contienen el histórico de resoluciones previas.
+```bash
+# Single invoice
+curl -X POST http://localhost:8000/invoices \
+  -H "Content-Type: application/json" \
+  -d '{
+    "document_id": "doc_new_001",
+    "supplier_name": "Orange Espana",
+    "supplier_tax_id": "",
+    "invoice_number": "F-2026-0312",
+    "invoice_date": "2026/03/02",
+    "currency": "EUR",
+    "base_amount": "82,64",
+    "tax_amount": "17,35",
+    "total_amount": "99,99",
+    "description": "Servicio movil empresa marzo 2026",
+    "country": "ES",
+    "field_confidence": {"supplier_name": 0.84, "supplier_tax_id": 0.35}
+  }'
 
-Este fichero actúa como memoria operativa del sistema y puede ser utilizado por el agente o por herramientas internas para:
+# Batch import (JSON array)
+curl -X POST http://localhost:8000/invoices/import \
+  -H "Content-Type: application/json" \
+  -d '{"invoices": [...]}'
 
-- relacionar proveedores similares
-- detectar patrones previos
-- sugerir categorías
-- sugerir business units
-- ayudar a decidir si un caso debe autoaprobarse o pasar a revisión
+# Seed from data/new_post_ocr_inputs.json (no body needed)
+curl -X POST http://localhost:8000/invoices/seed
+```
 
-#### `reference_data.json`
-Contiene datos de referencia para facilitar la resolución. Por ejemplo:
+### Query
 
-- proveedores canónicos conocidos
-- categorías válidas
-- business units válidas
-- reglas simples de revisión
+```bash
+# Single invoice (includes resolution if resolved)
+curl http://localhost:8000/invoices/doc_new_001
 
-## Qué se espera que construya el candidato
+# List with optional filter
+curl "http://localhost:8000/invoices?status=pending&limit=20"
+```
 
-A partir del material de este repositorio, se espera que el candidato implemente una solución capaz de:
+### Resolve (triggers LLM agent)
 
-- ingerir nuevas facturas post-OCR
-- normalizar datos relevantes
-- persistir input, estado y resultado
-- usar un LLM para inferir:
-  - `canonical_supplier`
-  - `predicted_spend_category`
-  - `predicted_business_unit` o `predicted_cost_center`
-  - `review_decision`
-  - `confidence`
-  - `decision_explanation`
-- consultar al menos una herramienta interna basada en histórico o referencia
-- exponer la información por API
-- exportar resultados a una capa analítica
+```bash
+# ~5-20s — agent calls 3 tools then returns structured JSON
+curl -X POST http://localhost:8000/invoices/doc_new_001/resolve
 
-## Alcance del agente
+# Manual override / correction (resets export flag for re-export)
+curl -X POST http://localhost:8000/invoices/doc_new_001/override \
+  -H "Content-Type: application/json" \
+  -d '{
+    "canonical_supplier": "ORANGE ESPAGNE SA",
+    "predicted_spend_category": "telecom",
+    "predicted_business_unit": "it",
+    "review_decision": "auto_approve",
+    "confidence": 0.95,
+    "decision_explanation": "Corrected by operator."
+  }'
+```
 
-El uso del LLM debe centrarse en **resolver incertidumbre de negocio**, no en tareas puramente deterministas.
+### Export to analytics layer
 
-Ejemplos de tareas adecuadas para el agente:
+```bash
+# Export all resolved-but-not-yet-exported → analytics.db
+curl -X POST http://localhost:8000/exports/run
 
-- unificación de variantes de proveedor
-- clasificación de gasto en una categoría cerrada
-- inferencia de business unit
-- decisión de `auto_approve` frente a `needs_review`
-- explicación breve de la decisión
+# Analytics summary
+curl http://localhost:8000/exports/summary
+```
 
-Ejemplos de tareas que deberían resolverse fuera del agente:
+---
 
-- parsing de fechas
-- limpieza de nulos
-- conversión de strings a números
-- validaciones aritméticas básicas
-- validación de esquema
+## Full end-to-end walkthrough
 
-## Recomendación sobre uso de APIs de modelos
+```bash
+# 1. Start server
+uvicorn backend.app:app --reload --port 8000
 
-Para implementar la parte agentic, se recomienda usar una API de modelos que disponga de una modalidad gratuita, free tier o créditos iniciales.
+# 2. Seed all 15 test invoices
+curl -X POST http://localhost:8000/invoices/seed
 
-Opciones razonables pueden ser:
+# 3. Resolve one and inspect the tool call trace
+curl -X POST http://localhost:8000/invoices/doc_new_001/resolve | python -m json.tool
 
-- **Google AI Studio / Gemini API**, que suele ofrecer una forma sencilla de probar modelos con cuota gratuita o limitada
-- algún **proveedor cloud con créditos gratuitos iniciales**
-- cualquier otra API de LLM equivalente, siempre que quede bien documentado en el README del candidato
+# 4. Or use the convenience script to resolve all + export
+python scripts/seed.py --resolve
+```
 
-Lo importante no es el proveedor concreto, sino que la solución:
+### Expected resolution output (doc_new_001 — Orange Espana)
 
-- sea reproducible
-- esté bien documentada
-- use el modelo con sentido
-- deje claro cómo configurar las credenciales o variables de entorno
+```json
+{
+  "canonical_supplier": "ORANGE ESPAGNE SA",
+  "predicted_spend_category": "telecom",
+  "predicted_business_unit": "it",
+  "review_decision": "auto_approve",
+  "confidence": 0.87,
+  "decision_explanation": "Matched to ORANGE ESPAGNE SA via tax ID ESA82009812 in both
+    the historical database (5 exact matches, all auto_approved as telecom/it) and the
+    reference catalog. Compliance flags: missing tax_id flag (low confidence in OCR for
+    that field) but historical and reference evidence is strong.",
+  "tool_calls_trace": [
+    {"tool": "lookup_historical_supplier", "input": {...}, "output": {"found": true, ...}},
+    {"tool": "validate_against_reference",  "input": {...}, "output": {"found": true, ...}},
+    {"tool": "check_compliance_flags",      "input": {...}, "output": {"risk_score": 0.2, ...}}
+  ]
+}
+```
 
-Si el candidato no quiere depender de un proveedor externo, también puede plantear una implementación desacoplada que permita cambiar fácilmente de proveedor o mockear el componente LLM. Lo más importante es como se organiza el código, si no se consigue la utilización de ningún LLM gratuito no es lo más importante, se valorará mucho más como resuelve el código y como se organiza.
+---
 
-## Recomendación de entrega al candidato
+## Run tests
 
-Si esta prueba se entrega a una persona candidata, lo más recomendable es compartir:
+```bash
+# All tests (no API key required — LLM resolve endpoint is not tested)
+pytest tests/ -v
 
-- el PDF del enunciado en la raíz
-- la carpeta `data/` con:
-  - `README.md`
-  - `new_post_ocr_inputs.json`
-  - `historical_resolutions.json`
-  - `reference_data.json`
+# Only normalisation layer
+pytest tests/test_invoice_processor.py -v
 
+# Only tool logic
+pytest tests/test_tools.py -v
 
-## Nota final
+# API integration (uses in-memory SQLite)
+pytest tests/test_api.py -v
+```
 
-La intención de este repositorio no es evaluar OCR, visión por computador ni conocimiento profundo de contabilidad, sino la capacidad de construir una solución clara y razonable donde confluyan:
+---
 
-- backend
-- datos
-- APIs
-- integración con LLMs
-- uso de contexto histórico y herramientas internas
+## Environment variables
+
+| Variable | Default | Description |
+|---|---|---|
+| `ANTHROPIC_API_KEY` | *(required)* | Anthropic API key |
+| `CLAUDE_MODEL` | `claude-sonnet-4-6` | Claude model ID |
+| `OPERATIONAL_DB_URL` | `sqlite:///./data/invoices.db` | Operational database |
+| `ANALYTICAL_DB_PATH` | `./data/analytics.db` | Analytics layer file |
+| `HISTORICAL_DATA_PATH` | `./data/historical_resolutions.json` | Agent memory |
+| `REFERENCE_DATA_PATH` | `./data/reference_data.json` | Canonical catalog |
+| `LOG_LEVEL` | `INFO` | Python logging level |
+| `AUTO_APPROVE_THRESHOLD` | `0.75` | Used in README docs only; logic is in agent |
+
+---
+
+## Known limitations
+
+1. **Synchronous LLM calls** — `/resolve` blocks until Claude responds (~5–20 s). Production would use async background tasks + polling or SSE.
+2. **No authentication** — as per spec.
+3. **SQLite concurrency** — fine for single-process; multi-worker deployment needs PostgreSQL.
+4. **No bulk resolve endpoint** — use `scripts/seed.py --resolve` for batch testing.
+5. **Static historical data** — loaded once at startup from JSON; production would query a live table.
+6. **Confidence is agent-determined** — not a calibrated probability; formula is implicit in the system prompt logic.
+
+## Possible future improvements
+
+- Async resolution with `BackgroundTasks` + status polling
+- PostgreSQL for operational DB + DuckDB / Parquet for analytics
+- Embeddings-based semantic search on historical data instead of fuzzy string matching
+- Re-injection of manually corrected resolutions as new historical records
+- `POST /invoices/resolve-batch` endpoint
+- Prompt caching for the (large) system prompt
+- Confidence calibration based on historical accuracy metrics
+- OpenAPI client generation for frontend or integration consumers
 
